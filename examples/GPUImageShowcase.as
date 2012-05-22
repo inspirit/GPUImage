@@ -13,6 +13,7 @@ package
     import flash.display3D.textures.Texture;
     import flash.events.Event;
     import flash.events.MouseEvent;
+    import flash.geom.Point;
     import flash.media.Camera;
     import flash.media.Video;
     import ru.inspirit.gpu.image.effects.GPUImageAnselEffect;
@@ -24,10 +25,12 @@ package
     import ru.inspirit.gpu.image.effects.GPUImageTiltShiftEffect;
     import ru.inspirit.gpu.image.effects.GPUImageToonEffect;
     import ru.inspirit.gpu.image.effects.GPUImageXProcessEffect;
-    import ru.inspirit.gpu.image.filters.GPUImageColorMapping;
+    import ru.inspirit.gpu.image.filters.GPUImageColorMatrix;
+    import ru.inspirit.gpu.image.filters.GPUImageCurves;
     import ru.inspirit.gpu.image.filters.GPUImageEmboss;
     import ru.inspirit.gpu.image.filters.GPUImageGaussianBlur;
     import ru.inspirit.gpu.image.filters.GPUImageGrayscale;
+    import ru.inspirit.gpu.image.filters.GPUImageLUT;
     import ru.inspirit.gpu.image.filters.GPUImagePosterize;
     import ru.inspirit.gpu.image.filters.GPUImageSepia;
     import ru.inspirit.gpu.image.filters.GPUImageSobelEdges;
@@ -139,8 +142,41 @@ package
             var lomoMapBmp:BitmapData = Bitmap(new lomo_ass).bitmapData;
             lomoTexture.uploadFromBitmapData(lomoMapBmp, 0);
             
-            var colorMap:GPUImageColorMapping = new GPUImageColorMapping();
-            colorMap.colorMapTexture = lomoTexture;
+            var colorMap:GPUImageLUT = new GPUImageLUT();
+            colorMap.lutTexture = lomoTexture
+            
+            // using Curves
+            var lomoGroup:GPUImageFilterGroup = new GPUImageFilterGroup();
+            var curves:GPUImageCurves = new GPUImageCurves();
+            curves.addCurvePoint(GPUImageCurves.CURVE_CHANNEL_RED,
+                                    new Point(0, 0),
+                                    new Point(60, 30),
+                                    new Point(190, 220),
+                                    new Point(255, 255)
+                                    );
+            curves.addCurvePoint(GPUImageCurves.CURVE_CHANNEL_GREEN,
+                                    new Point(0, 0),
+                                    new Point(60, 30),
+                                    new Point(190, 220),
+                                    new Point(255, 255)
+                                    );
+            curves.addCurvePoint(GPUImageCurves.CURVE_CHANNEL_BLUE,
+                                    new Point(0, 0),
+                                    new Point(30, 60),
+                                    new Point(220, 190),
+                                    new Point(255, 255)
+                                    );
+            // update texture
+            curves.update();
+            
+            var clrMat:GPUImageColorMatrix = new GPUImageColorMatrix();
+            clrMat.saturation = 1.5;
+            var lomoVig:GPUImageVignette = new GPUImageVignette();
+            
+            lomoGroup.addProcessor(curves);
+            lomoGroup.addProcessor(clrMat);
+            lomoGroup.addProcessor(lomoVig);
+            //
             
             var xpro:GPUImageXProcessEffect = new GPUImageXProcessEffect(0.5);
             
@@ -176,6 +212,7 @@ package
             _imageProcessors.push(new GPUImageGeorgiaEffect);
             _imageProcessors.push(xpro);
             _imageProcessors.push(colorMap);
+            _imageProcessors.push(lomoGroup);
             _imageProcessors.push(_gpuGray);
             _imageProcessors.push(_gpuSepia);
             _imageProcessors.push(_gpuGauss);
