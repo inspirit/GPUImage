@@ -12,8 +12,7 @@ package ru.inspirit.gpu.image.filters
     {
         internal static const FRAGMENT_CODE:String =
                                                 "tex ft0, v0, fs0 <2d,linear,mipnone,clamp>	\n" +
-                                                "dp3 ft1.x, ft0.xyz, fc0.xyz                \n" +
-                                                "mov ft0.xyz, ft1.xxx                       \n" +
+                                                "dp3 ft0.xyz, ft0.xyz, fc0.xyz                \n" +
                                                 "mov oc, ft0";
 
         protected var _params:Vector.<Number> = new <Number>[0.2125, 0.7154, 0.0721, 0.];
