@@ -16,6 +16,8 @@ package
     import flash.geom.Point;
     import flash.media.Camera;
     import flash.media.Video;
+	
+    import ru.inspirit.gpu.image.effects.GPUImageNoiseEffect;
     import ru.inspirit.gpu.image.effects.GPUImageAnselEffect;
     import ru.inspirit.gpu.image.effects.GPUImageBloomEffect;
     import ru.inspirit.gpu.image.effects.GPUImageGeorgiaEffect;
@@ -25,6 +27,7 @@ package
     import ru.inspirit.gpu.image.effects.GPUImageTiltShiftEffect;
     import ru.inspirit.gpu.image.effects.GPUImageToonEffect;
     import ru.inspirit.gpu.image.effects.GPUImageXProcessEffect;
+	
     import ru.inspirit.gpu.image.filters.GPUImageColorMatrix;
     import ru.inspirit.gpu.image.filters.GPUImageCurves;
     import ru.inspirit.gpu.image.filters.GPUImageEmboss;
@@ -36,6 +39,7 @@ package
     import ru.inspirit.gpu.image.filters.GPUImageSobelEdges;
     import ru.inspirit.gpu.image.filters.GPUImageUnsharpMask;
     import ru.inspirit.gpu.image.filters.GPUImageVignette;
+	
     import ru.inspirit.gpu.image.GPUImage;
     import ru.inspirit.gpu.image.GPUImageFilterGroup;
     import ru.inspirit.gpu.image.IGPUImageProcessor;
@@ -175,6 +179,7 @@ package
             
             lomoGroup.addProcessor(curves);
             lomoGroup.addProcessor(clrMat);
+            //lomoGroup.addProcessor(new GPUImageNoiseEffect(0.333));
             lomoGroup.addProcessor(lomoVig);
             //
             
@@ -203,8 +208,9 @@ package
             var anselGroup:GPUImageFilterGroup = new GPUImageFilterGroup();
             anselGroup.addProcessor(new GPUImageAnselEffect);
             anselGroup.addProcessor(new GPUImageUnsharpMask(3, .25));
-            anselGroup.addProcessor(new GPUImageVignette());
+            anselGroup.addProcessor(new GPUImageVignette());			
 
+            _imageProcessors.push(new GPUImageNoiseEffect(.333));
             _imageProcessors.push(new GPUImageRetroEffect());
             _imageProcessors.push(anselGroup);
             _imageProcessors.push(new GPUImageSaharaEffect());
